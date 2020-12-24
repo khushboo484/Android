@@ -1,20 +1,7 @@
-/*
- * Copyright (C) 2016 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.example.android.pets;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
@@ -26,6 +13,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
+
+import com.example.android.pets.data.PetContract;
+import com.example.android.pets.data.PetdbHelper;
 
 /**
  * Allows user to create a new pet or edit an existing one.
@@ -48,7 +39,7 @@ public class EditorActivity extends AppCompatActivity {
      * Gender of the pet. The possible values are:
      * 0 for unknown gender, 1 for male, 2 for female.
      */
-    private int mGender = 0;
+    private int mGender = PetContract.PetEntry.GENDER_UNKNOWN;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,11 +77,11 @@ public class EditorActivity extends AppCompatActivity {
                 String selection = (String) parent.getItemAtPosition(position);
                 if (!TextUtils.isEmpty(selection)) {
                     if (selection.equals(getString(R.string.gender_male))) {
-                        mGender = 1; // Male
+                        mGender = PetContract.PetEntry.GENDER_MALE; // Male
                     } else if (selection.equals(getString(R.string.gender_female))) {
-                        mGender = 2; // Female
+                        mGender = PetContract.PetEntry.GENDER_FEMALE; // Female
                     } else {
-                        mGender = 0; // Unknown
+                        mGender = PetContract.PetEntry.GENDER_UNKNOWN; // Unknown
                     }
                 }
             }
@@ -98,9 +89,45 @@ public class EditorActivity extends AppCompatActivity {
             // Because AdapterView is an abstract class, onNothingSelected must be defined
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                mGender = 0; // Unknown
+                mGender = PetContract.PetEntry.GENDER_UNKNOWN; // Unknown
             }
         });
+    }
+
+    /*
+    Get user input from editor and save new pet into database.
+     */
+    private void insertPet() {
+        // Read from input fields
+        // Use trim to eliminate leading or trailing  white space
+
+        String nameString = mNameEditText.getText().toString().trim();
+        String breedString = mBreedEditText.getText().toString().trim();
+        String weightString = mWeightEditText.getText().toString().trim();
+
+        int weight = Integer.parseInt(weightString);
+
+        // Create database helper
+        PetdbHelper mDbHelper = new PetdbHelper(this);
+
+        // Gets the database in write mode
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(PetContract.PetEntry.COLUMN_PET_NAME, nameString);
+        values.put(PetContract.PetEntry.COLUMN_PET_BREED, breedString);
+        values.put(PetContract.PetEntry.COLUMN_PET_GENDER, mGender);
+        values.put(PetContract.PetEntry.COLUMN_PET_WEIGHT, weightString);
+
+        // Insert a new row for pet in the database, returing the ID of that row
+        long newRowId = db.insert(PetContract.PetEntry.TABLE_NAME, null, values);
+
+        if(newRowId == -1) {
+            Toast.makeText(this, "Error with saving pet", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            Toast.makeText(this, "pet saved with row id: "+ newRowId, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -117,7 +144,10 @@ public class EditorActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
-                // Do nothing for now
+                // Save pet to database
+                insertPet();
+                // Exit Activity
+                finish();
                 return true;
             // Respond to a click on the "Delete" menu option
             case R.id.action_delete:
