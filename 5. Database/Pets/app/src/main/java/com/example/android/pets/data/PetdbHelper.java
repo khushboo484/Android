@@ -6,8 +6,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class PetdbHelper extends SQLiteOpenHelper {
 
-    public static final String LOG_TAG = PetdbHelper.class.getSimpleName();
-
     private static final String DB_NAME = "shelter.db";
     private static final int DB_VERSION = 1;
 
