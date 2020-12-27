@@ -33,6 +33,11 @@ public class CatalogActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        ListView petListView = (ListView) findViewById(R.id.list);
+
+        // Find and set empty view on List View
+        View emptyView = findViewById(R.id.empty_view);
+        petListView.setEmptyView(emptyView);
     }
 
     @Override
