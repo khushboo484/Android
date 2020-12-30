@@ -1,3 +1,0 @@
-# Android
-
-Learned these courses of Android App Development from Beginning to Advanced level from Udacity ...
