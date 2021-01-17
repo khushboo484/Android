@@ -4,7 +4,7 @@ android {
     compileSdkVersion 25
 
     defaultConfig {
-        applicationId "com.example.android.datafrominternet"
+        applicationId "com.example.android.asynctaskloader"
         minSdkVersion 10
         targetSdkVersion 25
         versionCode 1

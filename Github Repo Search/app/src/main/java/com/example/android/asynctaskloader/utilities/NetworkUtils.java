@@ -1,4 +1,4 @@
-package com.example.android.datafrominternet.utilities;
+package com.example.android.asynctaskloader.utilities;
 
 import android.net.Uri;
 
@@ -27,10 +27,10 @@ public class NetworkUtils {
     final static String sortBy = "stars";
 
     /**
-     * Builds the URL used to query GitHub.
+     * Builds the URL used to query Github.
      *
      * @param githubSearchQuery The keyword that will be queried for.
-     * @return The URL to use to query the GitHub server.
+     * @return The URL to use to query the weather server.
      */
     public static URL buildUrl(String githubSearchQuery) {
         Uri builtUri = Uri.parse(GITHUB_BASE_URL).buildUpon()
